@@ -549,30 +549,7 @@ const Tab1: React.FC = () => {
           </IonFabButton>
         </IonFab>
 
-        {/* 🔴 BOTÓN TEMPORAL - ELIMINAR DESPUÉS DE USAR */}
-        <div style={{ padding: '20px', textAlign: 'center', paddingBottom: '100px' }}>
-          <button
-            onClick={async () => {
-              const { Preferences } = await import('@capacitor/preferences');
-              await Preferences.remove({ key: 'taskmaster_categories' });
-              await Preferences.remove({ key: 'taskmaster_tasks' });
-              window.location.reload();
-            }}
-            style={{
-              padding: '12px 24px',
-              background: '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
-            }}
-          >
-            🔄 Resetear Categorías (Temporal)
-          </button>
-        </div>
+
       </IonContent>
     </IonPage>
   );
