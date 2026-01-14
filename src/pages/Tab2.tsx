@@ -1,27 +1,20 @@
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonIcon
-} from '@ionic/react';
-import {
-  calendar as calendarIcon,
-  checkmarkCircle
-} from 'ionicons/icons';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonIcon } from '@ionic/react';
+import { calendar as calendarIcon, checkmarkCircle } from 'ionicons/icons';
 import { StorageService } from '../services/storage.service';
 import { Task, Category } from '../types';
+import { startOfMonth, daysInMonth, tasksByDate } from './CalendarUtils';
 import './Tab2.css';
+
+const WEEKDAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 const Tab2: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [cursor, setCursor] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     const loadedTasks = await StorageService.getTasks();
@@ -30,13 +23,17 @@ const Tab2: React.FC = () => {
     setCategories(loadedCategories);
   };
 
-  const tasksWithDates = tasks
-    .filter(t => t.dueDate)
-    .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
+  const map = tasksByDate(tasks);
+  const monthStart = startOfMonth(cursor);
+  const offset = monthStart.getDay();
+  const totalDays = daysInMonth(cursor);
 
-  const getCategoryData = (categoryId: string) => {
-    return categories.find(cat => cat.id === categoryId);
-  };
+  const dayTasks = (d: Date) => map[d.toDateString()] || [];
+
+  const prevMonth = () => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1));
+  const nextMonth = () => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1));
+
+  const today = new Date();
 
   return (
     <IonPage>
@@ -49,75 +46,80 @@ const Tab2: React.FC = () => {
       <IonContent fullscreen className="calendar-content">
         <div className="calendar-container">
           <div className="calendar-header">
-            <h1 className="calendar-title">Mis Eventos</h1>
-            <p className="calendar-subtitle">Tareas programadas</p>
-          </div>
+            <div className="calendar-nav">
+              <button className="nav-btn" onClick={prevMonth}>&lt;</button>
+              <div className="month-label">{cursor.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</div>
+              <button className="nav-btn" onClick={nextMonth}>&gt;</button>
+            </div>
+            <div className="weekday-row">
+              {WEEKDAYS.map(w => <div key={w} className="weekday">{w}</div>)}
+            </div>
 
-          <div className="calendar-list">
-            {tasksWithDates.length === 0 ? (
-              <div className="empty-calendar">
-                <IonIcon icon={calendarIcon} className="empty-calendar-icon" />
-                <p className="empty-calendar-title">No hay tareas programadas</p>
-                <p className="empty-calendar-subtitle">
-                  Agrega fechas a tus tareas para verlas aquí
-                </p>
-              </div>
-            ) : (
-              tasksWithDates.map(task => {
-                const cat = getCategoryData(task.category);
-                const taskDate = new Date(task.dueDate!);
-                const today = new Date();
-                const isToday = taskDate.toDateString() === today.toDateString();
-                const isPast = taskDate < today && !isToday;
+            <div className="calendar-grid">
+              {Array.from({ length: offset }).map((_, i) => (
+                <div key={`pad-${i}`} className="day-cell empty" />
+              ))}
 
+              {Array.from({ length: totalDays }).map((_, i) => {
+                const day = i + 1;
+                const d = new Date(cursor.getFullYear(), cursor.getMonth(), day);
+                const has = dayTasks(d).length > 0;
+                const isToday = d.toDateString() === today.toDateString();
                 return (
                   <div
-                    key={task.id}
-                    className={`calendar-item ${task.completed ? 'completed' : ''} ${
-                      isToday ? 'today' : ''
-                    } ${isPast && !task.completed ? 'overdue' : ''}`}
+                    key={day}
+                    className={`day-cell ${has ? 'has-tasks' : ''} ${isToday ? 'today' : ''} ${selectedDate && d.toDateString() === selectedDate.toDateString() ? 'selected' : ''}`}
+                    onClick={() => setSelectedDate(d)}
                   >
-                    <div
-                      className="calendar-date-box"
-                      style={{
-                        backgroundColor: `${cat?.color}20`,
-                        color: cat?.color
-                      }}
-                    >
-                      <div className="date-day">{taskDate.getDate()}</div>
-                      <div className="date-month">
-                        {taskDate.toLocaleDateString('es-ES', { month: 'short' })}
-                      </div>
-                      {isToday && <div className="today-badge">Hoy</div>}
-                    </div>
-
-                    <div className="calendar-task-details">
-                      <p className={`calendar-task-text ${task.completed ? 'completed-text' : ''}`}>
-                        {task.text}
-                      </p>
-                      <div className="calendar-task-meta">
-                        <span
-                          className="category-badge"
-                          style={{ backgroundColor: `${cat?.color}30`, color: cat?.color }}
-                        >
-                          {cat?.name}
-                        </span>
-                        <span className={`priority-badge ${task.priority}`}>
-                          {task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Media' : 'Baja'}
-                        </span>
-                        {isPast && !task.completed && (
-                          <span className="overdue-badge">Vencida</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {task.completed && (
-                      <IonIcon icon={checkmarkCircle} className="completed-check" />
-                    )}
+                    <div className="day-number">{day}</div>
+                    {has && (() => {
+                      const tasksForDay = dayTasks(d);
+                      const firstCat = tasksForDay.length ? categories.find(c => c.id === tasksForDay[0].category) : undefined;
+                      const dotColor = firstCat?.color || '#10b981';
+                      return <div className="dot" style={{ backgroundColor: dotColor }} />;
+                    })()}
                   </div>
                 );
-              })
-            )}
+              })}
+            </div>
+
+            <div className="day-tasks">
+              {selectedDate ? (
+                <>
+                  <h3>{selectedDate.toDateString()}</h3>
+                  {dayTasks(selectedDate).length === 0 ? (
+                    <p>No hay tareas para este día.</p>
+                  ) : (
+                    dayTasks(selectedDate).map(t => (
+                      <div key={t.id} className={`task-row ${t.completed ? 'completed' : ''}`}>
+                        <div className="task-left">
+                          <div className="task-text">{t.text}</div>
+                          <div className="task-meta">
+                            <span className={`priority-badge ${t.priority}`}>{t.priority}</span>
+                          </div>
+                        </div>
+                        <div className="task-right">
+                          {t.completed ? <IonIcon icon={checkmarkCircle} /> : null}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </>
+              ) : (
+                <div className="calendar-summary">
+                  <h3>Hoy</h3>
+                  <p>Tareas programadas hoy: {map[new Date().toDateString()]?.length || 0}</p>
+                  <h4>Vencidas</h4>
+                  <div className="overdue-list">
+                    {tasks.filter(t => t.dueDate && new Date(t.dueDate) < today && !t.completed).map(t => (
+                      <div key={t.id} className="task-row overdue">
+                        <div className="task-text">{t.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </IonContent>

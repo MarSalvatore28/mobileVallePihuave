@@ -36,7 +36,8 @@ const Tab3: React.FC = () => {
     total: tasks.length,
     completed: tasks.filter(t => t.completed).length,
     active: tasks.filter(t => !t.completed).length,
-    highPriority: tasks.filter(t => !t.completed && t.priority === 'high').length
+    highPriority: tasks.filter(t => !t.completed && t.priority === 'high').length,
+    overdue: tasks.filter(t => t.dueDate && new Date(t.dueDate) < new Date() && !t.completed).length
   };
 
   const completionRate = allStats.total > 0 
@@ -80,8 +81,8 @@ const Tab3: React.FC = () => {
 
             <div className="stat-box red">
               <IonIcon icon={warning} className="stat-icon" />
-              <div className="stat-value">{allStats.highPriority}</div>
-              <div className="stat-label">Urgentes</div>
+              <div className="stat-value">{allStats.overdue}</div>
+              <div className="stat-label">Vencidas</div>
             </div>
           </div>
 

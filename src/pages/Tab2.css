@@ -4,6 +4,10 @@
   --background: #f5f5f5;
 }
 
+.calendar-content, .calendar-container, .calendar-header, .calendar-title, .calendar-subtitle {
+  color: #0f1724;
+}
+
 .calendar-container {
   padding: 1.5rem 1rem;
   max-width: 1200px;
@@ -198,6 +202,34 @@
   font-size: 0.875rem;
   margin: 0;
 }
+
+/* New calendar styles (month view) */
+.calendar-nav {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:1rem;
+}
+.nav-btn { background:transparent; border:1px solid #e5e7eb; padding:0.4rem 0.6rem; border-radius:0.4rem; cursor:pointer }
+.month-label { font-weight:600 }
+.weekday-row { display:flex; gap:0.5rem; margin-bottom:0.5rem }
+.weekday { flex:1; text-align:center; color:#6b7280; font-weight:600 }
+.calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:0.5rem }
+.day-cell { min-height:72px; background:#fff; border-radius:0.5rem; padding:0.4rem; position:relative; cursor:pointer; border:1px solid #f1f5f9 }
+.day-cell:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(2,6,23,0.06) }
+.day-cell.selected { background: linear-gradient(180deg, #e6f2ff, #fff); border:1px solid #60a5fa }
+.day-cell.empty { background:transparent; border:none }
+.day-number { font-weight:600; color:#374151 }
+.day-cell.today { box-shadow: 0 4px 14px rgba(59,130,246,0.08); border:1px solid #93c5fd }
+.day-cell.has-tasks { border:1px solid #e6fffa }
+.dot { width:8px; height:8px; background:#10b981; border-radius:9999px; position:absolute; bottom:6px; right:6px }
+.day-tasks { margin-top:1rem; padding:1rem; background:#fff; border-radius:0.5rem }
+.task-row { display:flex; justify-content:space-between; gap:1rem; padding:0.5rem 0 }
+.task-row.overdue { border-left:4px solid #ef4444; padding-left:0.75rem }
+.task-text { color:#1f2937 }
+.calendar-summary { padding:1rem }
+
 
 /* Responsive */
 @media (max-width: 768px) {
