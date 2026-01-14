@@ -23,6 +23,13 @@ const Tab3: React.FC = () => {
 
   useEffect(() => {
     loadData();
+
+    const handler = (_e: Event) => {
+      loadData();
+    };
+
+    window.addEventListener('storage:updated', handler as EventListener);
+    return () => window.removeEventListener('storage:updated', handler as EventListener);
   }, []);
 
   const loadData = async () => {

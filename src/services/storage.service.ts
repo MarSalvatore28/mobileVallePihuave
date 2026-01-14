@@ -16,6 +16,12 @@ export const StorageService = {
       key: TASKS_KEY,
       value: JSON.stringify(tasks)
     });
+    // Emit a global event so other parts of the app can react to changes
+    try {
+      window.dispatchEvent(new CustomEvent('storage:updated', { detail: { type: 'tasks' } }));
+    } catch (e) {
+      // In non-browser environments, ignore
+    }
   },
 
   // Categorías
@@ -41,5 +47,11 @@ export const StorageService = {
       key: CATEGORIES_KEY,
       value: JSON.stringify(categories)
     });
+    // Emit a global event so other parts of the app can react to changes
+    try {
+      window.dispatchEvent(new CustomEvent('storage:updated', { detail: { type: 'categories' } }));
+    } catch (e) {
+      // In non-browser environments, ignore
+    }
   }
 };
