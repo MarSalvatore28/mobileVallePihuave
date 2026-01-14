@@ -191,7 +191,8 @@ const Tab3: React.FC = () => {
               {(['high', 'medium', 'low'] as const).map(priority => {
                 const priorityTasks = tasks.filter(t => !t.completed && t.priority === priority);
                 const priorityLabel = priority === 'high' ? 'Alta' : priority === 'medium' ? 'Media' : 'Baja';
-                const priorityColor = priority === 'high' ? '#ef4444' : priority === 'medium' ? '#f59e0b' : '#6b7280';
+                // Cambiado: color verde para prioridad 'baja'
+                const priorityColor = priority === 'high' ? '#ef4444' : priority === 'medium' ? '#f59e0b' : '#10B981';
 
                 return (
                   <div key={priority} className="priority-card">
