@@ -1,5 +1,5 @@
 {
-  "name": "temp",
+  "name": "to-do-listcito",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -53,5 +53,5 @@
     "vite": "^5.0.0",
     "vitest": "^0.34.6"
   },
-  "description": "An Ionic project"
+  "description": "To-Do-listCito Ionic project"
 }

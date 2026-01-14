@@ -310,8 +310,8 @@ const Tab1: React.FC = () => {
 
           {/* Stats Cards */}
           <div className="stats-grid">
-            <div className="stat-card" style={{ borderColor: currentCategory?.color }}>
-              <div className="stat-number" style={{ color: currentCategory?.color }}>{stats.total}</div>
+            <div className="stat-card" style={{ borderColor: activeTab === 'all' ? '#6B7280' : currentCategory?.color }}>
+              <div className="stat-number" style={{ color: activeTab === 'all' ? '#6B7280' : currentCategory?.color }}>{stats.total}</div>
               <div className="stat-label">Total</div>
             </div>
             <div className="stat-card" style={{ borderColor: '#10b981' }}>
@@ -366,7 +366,19 @@ const Tab1: React.FC = () => {
           {/* Filters */}
           <div className="filter-buttons">
             {(['todas', 'activas', 'completadas'] as const).map(f => (
-              <button key={f} onClick={() => setFilter(f)} className={`filter-btn ${filter === f ? 'active' : ''}`} style={filter === f ? { backgroundColor: currentCategory?.color } : {}}>
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`filter-btn ${filter === f ? 'active' : ''}`}
+                style={
+                  filter === f
+                    ? {
+                        backgroundColor: activeTab === 'all' ? '#6B7280' : (currentCategory?.color || '#6B7280'),
+                        color: getContrastColor(activeTab === 'all' ? '#6B7280' : (currentCategory?.color || '#6B7280'))
+                      }
+                    : {}
+                }
+              >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
