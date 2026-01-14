@@ -117,7 +117,7 @@ const Tab1: React.FC = () => {
         completed: false,
         category: activeTab,
         priority: taskPriority,
-        dueDate: taskDueDate || '',
+        dueDate: taskDueDate ? `${taskDueDate}T00:00:00` : '',
         createdAt: new Date().toISOString()
       };
       const updatedTasks = [...tasks, task];
@@ -191,7 +191,7 @@ const Tab1: React.FC = () => {
           text: taskText.trim(),
           priority: taskPriority,
           category: taskCategory,
-          dueDate: taskDueDate
+          dueDate: taskDueDate ? `${taskDueDate}T00:00:00` : ''
         }
         : task
     );
