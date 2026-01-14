@@ -115,7 +115,7 @@ const Tab1: React.FC = () => {
         id: Date.now(),
         text: newTask.trim(),
         completed: false,
-        category: activeTab,
+        category: activeTab === 'all' ? (taskCategory || (categories[0]?.id ?? '')) : activeTab,
         priority: taskPriority,
         dueDate: taskDueDate ? `${taskDueDate}T00:00:00` : '',
         createdAt: new Date().toISOString()
@@ -212,7 +212,7 @@ const Tab1: React.FC = () => {
   const currentCategory = categories.find(c => c.id === activeTab);
 
   // Filtrado de tareas
-  let categoryTasks = tasks.filter(task => task.category === activeTab);
+  let categoryTasks = activeTab === 'all' ? [...tasks] : tasks.filter(task => task.category === activeTab);
 
   if (searchText.trim()) {
     categoryTasks = categoryTasks.filter(task =>
@@ -275,6 +275,16 @@ const Tab1: React.FC = () => {
 
           {/* Category Tabs */}
           <div className="category-tabs">
+            <div className="category-tab-wrapper">
+              <button
+                onClick={() => setActiveTab('all')}
+                className={`category-tab ${activeTab === 'all' ? 'active' : ''}`}
+                style={activeTab === 'all' ? { backgroundColor: '#6B7280', color: getContrastColor('#6B7280') } : {}}
+              >
+                <IonIcon icon={home} />
+                <span>Ver todas</span>
+              </button>
+            </div>
             {categories.map(cat => (
               <div key={cat.id} className="category-tab-wrapper">
                 <button
@@ -542,12 +552,7 @@ const Tab1: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        {/* FAB Button */}
-        <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={addTask} style={{ '--background': currentCategory?.color || '#6366F1' }}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
+        {/* FAB removed per user request */}
 
 
       </IonContent>
