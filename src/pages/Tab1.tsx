@@ -1,21 +1,18 @@
-import { 
-  IonContent, 
-  IonHeader, 
-  IonPage, 
-  IonTitle, 
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
   IonToolbar,
   IonFab,
   IonFabButton,
   IonModal,
   IonButton,
-  IonSelect,
-  IonSelectOption,
-  IonDatetime,
   IonButtons,
   IonIcon
 } from '@ionic/react';
-import { 
-  add, 
+import {
+  add,
   trash,
   pencil,
   close,
@@ -60,7 +57,7 @@ const Tab1: React.FC = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  
+
   // Category form state
   const [categoryName, setCategoryName] = useState('');
   const [categoryColor, setCategoryColor] = useState('#6366F1');
@@ -72,7 +69,7 @@ const Tab1: React.FC = () => {
   const [taskCategory, setTaskCategory] = useState('');
   const [taskDueDate, setTaskDueDate] = useState<string>('');
 
-  // Improved color palette - more vibrant and modern
+  // Improved color palette
   const colorPalette = [
     { hex: '#6366F1', name: 'Índigo' },
     { hex: '#8B5CF6', name: 'Violeta' },
@@ -83,7 +80,6 @@ const Tab1: React.FC = () => {
     { hex: '#14B8A6', name: 'Turquesa' },
     { hex: '#06B6D4', name: 'Cian' },
     { hex: '#3B82F6', name: 'Azul' },
-    { hex: '#6366F1', name: 'Índigo' },
     { hex: '#6B7280', name: 'Gris' },
     { hex: '#1F2937', name: 'Pizarra' }
   ];
@@ -103,10 +99,10 @@ const Tab1: React.FC = () => {
   const loadData = async () => {
     let loadedTasks = await StorageService.getTasks();
     let loadedCategories = await StorageService.getCategories();
-    
+
     setCategories(loadedCategories);
     setTasks(loadedTasks);
-    
+
     if (loadedCategories.length > 0) {
       setActiveTab(loadedCategories[0].id);
       setTaskCategory(loadedCategories[0].id);
@@ -177,7 +173,7 @@ const Tab1: React.FC = () => {
   };
 
   const openEditModal = (task: Task) => {
-    setEditingTask({...task});
+    setEditingTask({ ...task });
     setTaskText(task.text);
     setTaskPriority(task.priority);
     setTaskCategory(task.category);
@@ -187,16 +183,16 @@ const Tab1: React.FC = () => {
 
   const saveEditTask = async () => {
     if (!editingTask || !taskText.trim()) return;
-    
+
     const updatedTasks = tasks.map(task =>
-      task.id === editingTask.id 
+      task.id === editingTask.id
         ? {
-            ...task,
-            text: taskText.trim(),
-            priority: taskPriority,
-            category: taskCategory,
-            dueDate: taskDueDate
-          }
+          ...task,
+          text: taskText.trim(),
+          priority: taskPriority,
+          category: taskCategory,
+          dueDate: taskDueDate
+        }
         : task
     );
     setTasks(updatedTasks);
@@ -214,25 +210,22 @@ const Tab1: React.FC = () => {
   };
 
   const currentCategory = categories.find(c => c.id === activeTab);
-  
+
   // Filtrado de tareas
   let categoryTasks = tasks.filter(task => task.category === activeTab);
-  
-  // Filtro por búsqueda
+
   if (searchText.trim()) {
     categoryTasks = categoryTasks.filter(task =>
       task.text.toLowerCase().includes(searchText.toLowerCase())
     );
   }
-  
-  // Filtro por estado
+
   const filteredTasks = categoryTasks.filter(task => {
     if (filter === 'activas') return !task.completed;
     if (filter === 'completadas') return task.completed;
     return true;
   });
 
-  // Ordenar por prioridad y fecha
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     const priorityOrder = { high: 0, medium: 1, low: 2 };
     if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
@@ -254,7 +247,7 @@ const Tab1: React.FC = () => {
           <IonTitle>Mis Tareas</IonTitle>
         </IonToolbar>
       </IonHeader>
-      
+
       <IonContent fullscreen className="taskflow-content">
         <div className="main-content">
           <div className="header-section">
@@ -274,10 +267,7 @@ const Tab1: React.FC = () => {
               className="search-input-improved"
             />
             {searchText && (
-              <button 
-                className="search-clear-btn"
-                onClick={() => setSearchText('')}
-              >
+              <button className="search-clear-btn" onClick={() => setSearchText('')}>
                 <IonIcon icon={close} />
               </button>
             )}
@@ -290,29 +280,19 @@ const Tab1: React.FC = () => {
                 <button
                   onClick={() => setActiveTab(cat.id)}
                   className={`category-tab ${activeTab === cat.id ? 'active' : ''}`}
-                  style={
-                    activeTab === cat.id
-                      ? { backgroundColor: cat.color, color: getContrastColor(cat.color) }
-                      : {}
-                  }
+                  style={activeTab === cat.id ? { backgroundColor: cat.color, color: getContrastColor(cat.color) } : {}}
                 >
                   <IonIcon icon={iconMap[cat.icon] || folder} />
                   <span>{cat.name}</span>
                 </button>
                 {categories.length > 1 && activeTab === cat.id && (
-                  <button
-                    onClick={() => deleteCategory(cat.id)}
-                    className="delete-category-btn"
-                  >
+                  <button onClick={() => deleteCategory(cat.id)} className="delete-category-btn">
                     <IonIcon icon={close} />
                   </button>
                 )}
               </div>
             ))}
-            <button
-              onClick={() => setShowCategoryModal(true)}
-              className="category-tab new-category"
-            >
+            <button onClick={() => setShowCategoryModal(true)} className="category-tab new-category">
               <IonIcon icon={add} />
               <span>Nueva</span>
             </button>
@@ -348,56 +328,27 @@ const Tab1: React.FC = () => {
                 className="task-input-white"
               />
             </div>
-            
+
             <div className="add-task-controls">
-              {/* Priority Selector */}
               <div className="priority-selector-compact">
-                <button
-                  onClick={() => setTaskPriority('low')}
-                  className={`priority-chip low ${taskPriority === 'low' ? 'active' : ''}`}
-                  title="Prioridad Baja"
-                >
-                  <span className="priority-dot"></span>
-                  Baja
+                <button onClick={() => setTaskPriority('low')} className={`priority-chip low ${taskPriority === 'low' ? 'active' : ''}`}>
+                  <span className="priority-dot"></span>Baja
                 </button>
-                <button
-                  onClick={() => setTaskPriority('medium')}
-                  className={`priority-chip medium ${taskPriority === 'medium' ? 'active' : ''}`}
-                  title="Prioridad Media"
-                >
-                  <span className="priority-dot"></span>
-                  Media
+                <button onClick={() => setTaskPriority('medium')} className={`priority-chip medium ${taskPriority === 'medium' ? 'active' : ''}`}>
+                  <span className="priority-dot"></span>Media
                 </button>
-                <button
-                  onClick={() => setTaskPriority('high')}
-                  className={`priority-chip high ${taskPriority === 'high' ? 'active' : ''}`}
-                  title="Prioridad Alta"
-                >
-                  <span className="priority-dot"></span>
-                  Alta
+                <button onClick={() => setTaskPriority('high')} className={`priority-chip high ${taskPriority === 'high' ? 'active' : ''}`}>
+                  <span className="priority-dot"></span>Alta
                 </button>
               </div>
 
-              {/* Date Picker */}
               <div className="date-input-wrapper">
-                <input
-                  type="date"
-                  value={taskDueDate}
-                  onChange={(e: any) => setTaskDueDate(e.target.value)}
-                  className="native-date-input"
-                  aria-label="Fecha de vencimiento"
-                />
+                <input type="date" value={taskDueDate} onChange={(e: any) => setTaskDueDate(e.target.value)} className="native-date-input" />
                 <IonIcon icon={calendarIcon} className="calendar-icon-overlay" />
               </div>
 
-              {/* Add Button */}
-              <button
-                onClick={addTask}
-                className="add-button-compact"
-                style={{ backgroundColor: currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}
-              >
-                <IonIcon icon={add} />
-                <span>Agregar</span>
+              <button onClick={addTask} className="add-button-compact" style={{ backgroundColor: currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}>
+                <IonIcon icon={add} /><span>Agregar</span>
               </button>
             </div>
           </div>
@@ -405,12 +356,7 @@ const Tab1: React.FC = () => {
           {/* Filters */}
           <div className="filter-buttons">
             {(['todas', 'activas', 'completadas'] as const).map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`filter-btn ${filter === f ? 'active' : ''}`}
-                style={filter === f ? { backgroundColor: currentCategory?.color } : {}}
-              >
+              <button key={f} onClick={() => setFilter(f)} className={`filter-btn ${filter === f ? 'active' : ''}`} style={filter === f ? { backgroundColor: currentCategory?.color } : {}}>
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
@@ -421,31 +367,17 @@ const Tab1: React.FC = () => {
             {sortedTasks.length === 0 ? (
               <div className="empty-state">
                 <IonIcon icon={checkmarkCircle} className="empty-icon" />
-                <p className="empty-title">
-                  {searchText ? 'No se encontraron tareas' : 'No hay tareas aquí'}
-                </p>
-                <p className="empty-subtitle">
-                  {searchText ? 'Intenta con otra búsqueda' : '¡Agrega tu primera tarea!'}
-                </p>
+                <p className="empty-title">{searchText ? 'No se encontraron tareas' : 'No hay tareas aquí'}</p>
+                <p className="empty-subtitle">{searchText ? 'Intenta con otra búsqueda' : '¡Agrega tu primera tarea!'}</p>
               </div>
             ) : (
               sortedTasks.map(task => (
-                <div
-                  key={task.id}
-                  className={`task-item ${task.completed ? 'completed' : ''}`}
-                >
-                  <button
-                    onClick={() => toggleTask(task.id)}
-                    className="task-checkbox"
-                    style={!task.completed ? { color: currentCategory?.color } : {}}
-                  >
+                <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+                  <button onClick={() => toggleTask(task.id)} className="task-checkbox" style={!task.completed ? { color: currentCategory?.color } : {}}>
                     <IonIcon icon={task.completed ? checkmarkCircle : ellipseOutline} />
                   </button>
-                  
                   <div className="task-content">
-                    <p className={`task-text ${task.completed ? 'completed-text' : ''}`}>
-                      {task.text}
-                    </p>
+                    <p className={`task-text ${task.completed ? 'completed-text' : ''}`}>{task.text}</p>
                     <div className="task-badges">
                       <span className={`priority-badge ${task.priority}`}>
                         {task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Media' : 'Baja'}
@@ -458,17 +390,10 @@ const Tab1: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  
-                  <button
-                    onClick={() => openEditModal(task)}
-                    className="task-action-btn edit"
-                  >
+                  <button onClick={() => openEditModal(task)} className="task-action-btn edit">
                     <IonIcon icon={pencil} />
                   </button>
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    className="task-action-btn delete"
-                  >
+                  <button onClick={() => deleteTask(task.id)} className="task-action-btn delete">
                     <IonIcon icon={trash} />
                   </button>
                 </div>
@@ -481,7 +406,7 @@ const Tab1: React.FC = () => {
           </div>
         </div>
 
-        {/* Category Modal - SIMPLE AND CLEAN */}
+        {/* Category Modal */}
         <IonModal isOpen={showCategoryModal} onDidDismiss={() => setShowCategoryModal(false)}>
           <IonHeader>
             <IonToolbar>
@@ -495,95 +420,47 @@ const Tab1: React.FC = () => {
           </IonHeader>
           <IonContent>
             <div className="simple-modal-content">
-              {/* Preview */}
               <div className="simple-preview" style={{ backgroundColor: categoryColor }}>
-                <IonIcon 
-                  icon={iconMap[selectedIcon]} 
-                  className="preview-icon-white"
-                />
-                <div className="preview-text-white">
-                  {categoryName || 'Mi Categoría'}
-                </div>
+                <IonIcon icon={iconMap[selectedIcon]} className="preview-icon-white" />
+                <div className="preview-text-white">{categoryName || 'Mi Categoría'}</div>
               </div>
 
-              {/* Name */}
               <div className="simple-form-group">
                 <label>Nombre</label>
-                <input
-                  value={categoryName}
-                  placeholder="Ej: Trabajo, Gym, Estudios..."
-                  onChange={(e: any) => setCategoryName(e.target.value)}
-                  className="simple-input-white"
-                  autoFocus
-                />
+                <input value={categoryName} placeholder="Ej: Trabajo, Gym, Estudios..." onChange={(e: any) => setCategoryName(e.target.value)} className="simple-input-white" autoFocus />
               </div>
 
-              {/* Colors */}
               <div className="simple-form-group">
                 <label>Color</label>
                 <div className="simple-color-grid">
                   {colorPalette.map(color => (
-                    <button
-                      key={color.hex}
-                      onClick={() => setCategoryColor(color.hex)}
-                      className={`simple-color-btn ${categoryColor === color.hex ? 'selected' : ''}`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                    >
-                      {categoryColor === color.hex && (
-                        <IonIcon icon={checkmarkCircle} style={{ color: getContrastColor(color.hex) }} />
-                      )}
+                    <button key={color.hex} onClick={() => setCategoryColor(color.hex)} className={`simple-color-btn ${categoryColor === color.hex ? 'selected' : ''}`} style={{ backgroundColor: color.hex }} title={color.name}>
+                      {categoryColor === color.hex && (<IonIcon icon={checkmarkCircle} style={{ color: getContrastColor(color.hex) }} />)}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Icons */}
               <div className="simple-form-group">
                 <label>Ícono</label>
                 <div className="simple-icon-grid">
                   {Object.entries(iconMap).map(([key, icon]) => (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedIcon(key)}
-                      className={`simple-icon-btn ${selectedIcon === key ? 'selected' : ''}`}
-                      style={selectedIcon === key ? { 
-                        backgroundColor: categoryColor,
-                        color: getContrastColor(categoryColor)
-                      } : {}}
-                    >
+                    <button key={key} onClick={() => setSelectedIcon(key)} className={`simple-icon-btn ${selectedIcon === key ? 'selected' : ''}`} style={selectedIcon === key ? { backgroundColor: categoryColor, color: getContrastColor(categoryColor) } : {}}>
                       <IonIcon icon={icon} />
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="simple-modal-actions">
-                <IonButton
-                  expand="block"
-                  fill="outline"
-                  onClick={() => setShowCategoryModal(false)}
-                >
-                  Cancelar
-                </IonButton>
-                <IonButton
-                  expand="block"
-                  onClick={addCategory}
-                  disabled={!categoryName.trim()}
-                  style={{ 
-                    '--background': categoryColor,
-                    color: getContrastColor(categoryColor)
-                  }}
-                >
-                  Crear
-                </IonButton>
+                <IonButton expand="block" fill="outline" onClick={() => setShowCategoryModal(false)}>Cancelar</IonButton>
+                <IonButton expand="block" onClick={addCategory} disabled={!categoryName.trim()} style={{ '--background': categoryColor, color: getContrastColor(categoryColor) }}>Crear</IonButton>
               </div>
             </div>
           </IonContent>
         </IonModal>
 
-        {/* Edit Task Modal - REDESIGNED */}
+        {/* Edit Task Modal */}
         <IonModal isOpen={showEditModal} onDidDismiss={() => setShowEditModal(false)}>
           <IonHeader>
             <IonToolbar>
@@ -597,11 +474,7 @@ const Tab1: React.FC = () => {
           </IonHeader>
           <IonContent>
             <div className="simple-modal-content">
-              {/* Task Preview */}
-              <div className="task-preview-card" style={{ 
-                borderLeftColor: currentCategory?.color || '#6366F1',
-                backgroundColor: `${currentCategory?.color || '#6366F1'}08`
-              }}>
+              <div className="task-preview-card" style={{ borderLeftColor: currentCategory?.color || '#6366F1', backgroundColor: `${currentCategory?.color || '#6366F1'}08` }}>
                 <div className="task-preview-icon" style={{ backgroundColor: currentCategory?.color || '#6366F1' }}>
                   <IonIcon icon={iconMap[currentCategory?.icon || 'folder']} className="preview-icon-white" />
                 </div>
@@ -621,74 +494,39 @@ const Tab1: React.FC = () => {
                 </div>
               </div>
 
-              {/* Description Input */}
               <div className="simple-form-group">
                 <label>Descripción de la tarea</label>
-                <input
-                  value={taskText}
-                  onChange={(e: any) => setTaskText(e.target.value)}
-                  className="simple-input-white"
-                  placeholder="Ej: Comprar víveres, Estudiar para el examen..."
-                />
+                <input value={taskText} onChange={(e: any) => setTaskText(e.target.value)} className="simple-input-white" placeholder="Ej: Comprar víveres, Estudiar para el examen..." />
               </div>
 
-              {/* Priority Selector */}
               <div className="simple-form-group">
                 <label>Prioridad</label>
                 <div className="priority-selector-modal">
-                  <button
-                    onClick={() => setTaskPriority('low')}
-                    className={`priority-chip-modal low ${taskPriority === 'low' ? 'active' : ''}`}
-                  >
-                    <span className="priority-dot"></span>
-                    Baja
+                  <button onClick={() => setTaskPriority('low')} className={`priority-chip-modal low ${taskPriority === 'low' ? 'active' : ''}`}>
+                    <span className="priority-dot"></span>Baja
                   </button>
-                  <button
-                    onClick={() => setTaskPriority('medium')}
-                    className={`priority-chip-modal medium ${taskPriority === 'medium' ? 'active' : ''}`}
-                  >
-                    <span className="priority-dot"></span>
-                    Media
+                  <button onClick={() => setTaskPriority('medium')} className={`priority-chip-modal medium ${taskPriority === 'medium' ? 'active' : ''}`}>
+                    <span className="priority-dot"></span>Media
                   </button>
-                  <button
-                    onClick={() => setTaskPriority('high')}
-                    className={`priority-chip-modal high ${taskPriority === 'high' ? 'active' : ''}`}
-                  >
-                    <span className="priority-dot"></span>
-                    Alta
+                  <button onClick={() => setTaskPriority('high')} className={`priority-chip-modal high ${taskPriority === 'high' ? 'active' : ''}`}>
+                    <span className="priority-dot"></span>Alta
                   </button>
                 </div>
               </div>
 
-              {/* Date Picker */}
               <div className="simple-form-group">
                 <label>Fecha de vencimiento</label>
                 <div className="date-input-wrapper-full">
-                  <input
-                    type="date"
-                    value={taskDueDate}
-                    onChange={(e: any) => setTaskDueDate(e.detail.value)}
-                    className="native-date-input-full"
-                  />
+                  <input type="date" value={taskDueDate} onChange={(e: any) => setTaskDueDate(e.target.value)} className="native-date-input-full" />
                   <IonIcon icon={calendarIcon} className="calendar-icon-overlay" />
                 </div>
               </div>
 
-              {/* Category Selector */}
               <div className="simple-form-group">
                 <label>Categoría</label>
                 <div className="category-selector-grid">
                   {categories.map(cat => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setTaskCategory(cat.id)}
-                      className={`category-chip ${taskCategory === cat.id ? 'active' : ''}`}
-                      style={taskCategory === cat.id ? {
-                        backgroundColor: cat.color,
-                        color: getContrastColor(cat.color),
-                        borderColor: cat.color
-                      } : {}}
-                    >
+                    <button key={cat.id} onClick={() => setTaskCategory(cat.id)} className={`category-chip ${taskCategory === cat.id ? 'active' : ''}`} style={taskCategory === cat.id ? { backgroundColor: cat.color, color: getContrastColor(cat.color), borderColor: cat.color } : {}}>
                       <IonIcon icon={iconMap[cat.icon] || folder} />
                       <span>{cat.name}</span>
                     </button>
@@ -696,26 +534,9 @@ const Tab1: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="simple-modal-actions">
-                <IonButton
-                  expand="block"
-                  fill="outline"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  Cancelar
-                </IonButton>
-                <IonButton
-                  expand="block"
-                  onClick={saveEditTask}
-                  disabled={!taskText.trim()}
-                  style={{ 
-                    '--background': currentCategory?.color || '#6366F1',
-                    color: getContrastColor(currentCategory?.color || '#6366F1')
-                  }}
-                >
-                  Guardar Cambios
-                </IonButton>
+                <IonButton expand="block" fill="outline" onClick={() => setShowEditModal(false)}>Cancelar</IonButton>
+                <IonButton expand="block" onClick={saveEditTask} disabled={!taskText.trim()} style={{ '--background': currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}>Guardar Cambios</IonButton>
               </div>
             </div>
           </IonContent>
@@ -727,6 +548,31 @@ const Tab1: React.FC = () => {
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
+
+        {/* 🔴 BOTÓN TEMPORAL - ELIMINAR DESPUÉS DE USAR */}
+        <div style={{ padding: '20px', textAlign: 'center', paddingBottom: '100px' }}>
+          <button
+            onClick={async () => {
+              const { Preferences } = await import('@capacitor/preferences');
+              await Preferences.remove({ key: 'taskmaster_categories' });
+              await Preferences.remove({ key: 'taskmaster_tasks' });
+              window.location.reload();
+            }}
+            style={{
+              padding: '12px 24px',
+              background: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+            }}
+          >
+            🔄 Resetear Categorías (Temporal)
+          </button>
+        </div>
       </IonContent>
     </IonPage>
   );

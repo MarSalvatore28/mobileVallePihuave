@@ -24,13 +24,13 @@ export const StorageService = {
     if (value) {
       return JSON.parse(value);
     }
-    // Categorías por defecto
+    // Categorías por defecto con colores vibrantes y modernos
     const defaultCategories: Category[] = [
-      { id: 'work', name: 'Trabajo', color: '#293540', icon: 'briefcase' },
-      { id: 'personal', name: 'Personal', color: '#2C4859', icon: 'person' },
-      { id: 'shopping', name: 'Compras', color: '#869AA6', icon: 'cart' },
-      { id: 'health', name: 'Salud', color: '#456673', icon: 'fitness' },
-      { id: 'study', name: 'Estudio', color: '#293540', icon: 'book' }
+      { id: 'work', name: 'Trabajo', color: '#6366F1', icon: 'briefcase' },      // Índigo vibrante
+      { id: 'personal', name: 'Personal', color: '#8B5CF6', icon: 'heart' },      // Violeta
+      { id: 'shopping', name: 'Compras', color: '#EC4899', icon: 'cart' },        // Rosa
+      { id: 'health', name: 'Salud', color: '#10B981', icon: 'fitness' },         // Verde esmeralda
+      { id: 'study', name: 'Estudio', color: '#3B82F6', icon: 'book' }            // Azul brillante
     ];
     await this.saveCategories(defaultCategories);
     return defaultCategories;
