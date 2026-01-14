@@ -258,25 +258,28 @@ const Tab1: React.FC = () => {
       <IonContent fullscreen className="taskflow-content">
         <div className="main-content">
           <div className="header-section">
-            <h1 className="main-title">TaskFlow</h1>
+            <h1 className="main-title">To-Do-listCito</h1>
             <p className="subtitle">Organiza tu vida con estilo</p>
           </div>
 
           {/* Search Bar */}
-          <div className="search-bar">
-            <IonIcon icon={search} className="search-icon" />
+          <div className="search-bar-improved">
+            <div className="search-icon-wrapper">
+              <IonIcon icon={search} className="search-icon-improved" />
+            </div>
             <input
               value={searchText}
               placeholder="Buscar tareas..."
               onChange={(e: any) => setSearchText(e.target.value)}
-              className="search-input plain-input"
+              className="search-input-improved"
             />
             {searchText && (
-              <IonIcon 
-                icon={close} 
-                className="search-clear"
+              <button 
+                className="search-clear-btn"
                 onClick={() => setSearchText('')}
-              />
+              >
+                <IonIcon icon={close} />
+              </button>
             )}
           </div>
 
@@ -333,33 +336,70 @@ const Tab1: React.FC = () => {
 
           {/* Add Task Input */}
           <div className="add-task-card">
-            <div className="task-icon" style={{ backgroundColor: `${currentCategory?.color}20` }}>
-              <IonIcon icon={iconMap[currentCategory?.icon || 'folder']} style={{ color: currentCategory?.color }} />
-            </div>
-            <input
-              value={newTask}
-              placeholder="Agregar nueva tarea..."
-              onChange={(e: any) => setNewTask(e.target.value)}
-              onKeyPress={(e: any) => e.key === 'Enter' && addTask()}
-              className="task-input-white"
-            />
-            <div className="task-controls">
+            <div className="add-task-header">
+              <div className="task-icon" style={{ backgroundColor: `${currentCategory?.color}20` }}>
+                <IonIcon icon={iconMap[currentCategory?.icon || 'folder']} style={{ color: currentCategory?.color }} />
+              </div>
               <input
-                type="date"
-                value={taskDueDate}
-                onChange={(e: any) => setTaskDueDate(e.target.value)}
-                className="native-date-input"
-                aria-label="Fecha de vencimiento"
+                value={newTask}
+                placeholder="Agregar nueva tarea..."
+                onChange={(e: any) => setNewTask(e.target.value)}
+                onKeyPress={(e: any) => e.key === 'Enter' && addTask()}
+                className="task-input-white"
               />
             </div>
-            <button
-              onClick={addTask}
-              className="add-button"
-              style={{ backgroundColor: currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}
-            >
-              <IonIcon icon={add} />
-              <span>Agregar</span>
-            </button>
+            
+            <div className="add-task-controls">
+              {/* Priority Selector */}
+              <div className="priority-selector-compact">
+                <button
+                  onClick={() => setTaskPriority('low')}
+                  className={`priority-chip low ${taskPriority === 'low' ? 'active' : ''}`}
+                  title="Prioridad Baja"
+                >
+                  <span className="priority-dot"></span>
+                  Baja
+                </button>
+                <button
+                  onClick={() => setTaskPriority('medium')}
+                  className={`priority-chip medium ${taskPriority === 'medium' ? 'active' : ''}`}
+                  title="Prioridad Media"
+                >
+                  <span className="priority-dot"></span>
+                  Media
+                </button>
+                <button
+                  onClick={() => setTaskPriority('high')}
+                  className={`priority-chip high ${taskPriority === 'high' ? 'active' : ''}`}
+                  title="Prioridad Alta"
+                >
+                  <span className="priority-dot"></span>
+                  Alta
+                </button>
+              </div>
+
+              {/* Date Picker */}
+              <div className="date-input-wrapper">
+                <input
+                  type="date"
+                  value={taskDueDate}
+                  onChange={(e: any) => setTaskDueDate(e.target.value)}
+                  className="native-date-input"
+                  aria-label="Fecha de vencimiento"
+                />
+                <IonIcon icon={calendarIcon} className="calendar-icon-overlay" />
+              </div>
+
+              {/* Add Button */}
+              <button
+                onClick={addTask}
+                className="add-button-compact"
+                style={{ backgroundColor: currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}
+              >
+                <IonIcon icon={add} />
+                <span>Agregar</span>
+              </button>
+            </div>
           </div>
 
           {/* Filters */}
@@ -543,10 +583,10 @@ const Tab1: React.FC = () => {
           </IonContent>
         </IonModal>
 
-        {/* Edit Task Modal */}
-        <IonModal className="no-backdrop-modal" isOpen={showEditModal} onDidDismiss={() => setShowEditModal(false)}>
+        {/* Edit Task Modal - REDESIGNED */}
+        <IonModal isOpen={showEditModal} onDidDismiss={() => setShowEditModal(false)}>
           <IonHeader>
-            <IonToolbar className="modal-toolbar" style={{ background: '#ffffff' }}>
+            <IonToolbar>
               <IonTitle>Editar Tarea</IonTitle>
               <IonButtons slot="end">
                 <IonButton onClick={() => setShowEditModal(false)}>
@@ -555,59 +595,127 @@ const Tab1: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="modal-content">
-            <div className="category-modal-card">
-              <div className="form-section">
-                <label className="form-label">Descripción</label>
+          <IonContent>
+            <div className="simple-modal-content">
+              {/* Task Preview */}
+              <div className="task-preview-card" style={{ 
+                borderLeftColor: currentCategory?.color || '#6366F1',
+                backgroundColor: `${currentCategory?.color || '#6366F1'}08`
+              }}>
+                <div className="task-preview-icon" style={{ backgroundColor: currentCategory?.color || '#6366F1' }}>
+                  <IonIcon icon={iconMap[currentCategory?.icon || 'folder']} className="preview-icon-white" />
+                </div>
+                <div className="task-preview-text">
+                  <p className="task-preview-title">{taskText || 'Escribe tu tarea...'}</p>
+                  <div className="task-preview-meta">
+                    <span className={`mini-priority-badge ${taskPriority}`}>
+                      {taskPriority === 'high' ? 'Alta' : taskPriority === 'medium' ? 'Media' : 'Baja'}
+                    </span>
+                    {taskDueDate && (
+                      <span className="mini-date-badge">
+                        <IonIcon icon={calendarIcon} />
+                        {new Date(taskDueDate).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Description Input */}
+              <div className="simple-form-group">
+                <label>Descripción de la tarea</label>
                 <input
                   value={taskText}
                   onChange={(e: any) => setTaskText(e.target.value)}
-                  className="form-input-white"
+                  className="simple-input-white"
+                  placeholder="Ej: Comprar víveres, Estudiar para el examen..."
                 />
               </div>
 
-              <div className="form-section">
-                <label className="form-label">Prioridad</label>
-                <div className="priority-buttons">
-                  {(['low', 'medium', 'high'] as const).map(p => (
+              {/* Priority Selector */}
+              <div className="simple-form-group">
+                <label>Prioridad</label>
+                <div className="priority-selector-modal">
+                  <button
+                    onClick={() => setTaskPriority('low')}
+                    className={`priority-chip-modal low ${taskPriority === 'low' ? 'active' : ''}`}
+                  >
+                    <span className="priority-dot"></span>
+                    Baja
+                  </button>
+                  <button
+                    onClick={() => setTaskPriority('medium')}
+                    className={`priority-chip-modal medium ${taskPriority === 'medium' ? 'active' : ''}`}
+                  >
+                    <span className="priority-dot"></span>
+                    Media
+                  </button>
+                  <button
+                    onClick={() => setTaskPriority('high')}
+                    className={`priority-chip-modal high ${taskPriority === 'high' ? 'active' : ''}`}
+                  >
+                    <span className="priority-dot"></span>
+                    Alta
+                  </button>
+                </div>
+              </div>
+
+              {/* Date Picker */}
+              <div className="simple-form-group">
+                <label>Fecha de vencimiento</label>
+                <div className="date-input-wrapper-full">
+                  <input
+                    type="date"
+                    value={taskDueDate}
+                    onChange={(e: any) => setTaskDueDate(e.detail.value)}
+                    className="native-date-input-full"
+                  />
+                  <IonIcon icon={calendarIcon} className="calendar-icon-overlay" />
+                </div>
+              </div>
+
+              {/* Category Selector */}
+              <div className="simple-form-group">
+                <label>Categoría</label>
+                <div className="category-selector-grid">
+                  {categories.map(cat => (
                     <button
-                      key={p}
-                      onClick={() => setTaskPriority(p)}
-                      className={`priority-button ${taskPriority === p ? 'selected' : ''} ${p}`}
+                      key={cat.id}
+                      onClick={() => setTaskCategory(cat.id)}
+                      className={`category-chip ${taskCategory === cat.id ? 'active' : ''}`}
+                      style={taskCategory === cat.id ? {
+                        backgroundColor: cat.color,
+                        color: getContrastColor(cat.color),
+                        borderColor: cat.color
+                      } : {}}
                     >
-                      {p === 'high' ? 'Alta' : p === 'medium' ? 'Media' : 'Baja'}
+                      <IonIcon icon={iconMap[cat.icon] || folder} />
+                      <span>{cat.name}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="form-section">
-                <label className="form-label">Fecha de vencimiento</label>
-                <input
-                  type="date"
-                  value={taskDueDate}
-                  onChange={(e: any) => setTaskDueDate(e.target.value)}
-                  className="native-date-input-full"
-                />
-              </div>
-
-              <div className="form-section">
-                <label className="form-label">Categoría</label>
-                <IonSelect
-                  value={taskCategory}
-                  onIonChange={(e: any) => setTaskCategory(e.detail.value)}
+              {/* Action Buttons */}
+              <div className="simple-modal-actions">
+                <IonButton
+                  expand="block"
+                  fill="outline"
+                  onClick={() => setShowEditModal(false)}
                 >
-                  {categories.map(cat => (
-                    <IonSelectOption key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
-              </div>
-
-              <div className="modal-actions modal-actions-row">
-                <IonButton onClick={() => setShowEditModal(false)} fill="clear">Cancelar</IonButton>
-                <IonButton onClick={saveEditTask} style={{ '--background': currentCategory?.color || '#6366F1', color: getContrastColor(currentCategory?.color || '#6366F1') }}>Guardar</IonButton>
+                  Cancelar
+                </IonButton>
+                <IonButton
+                  expand="block"
+                  onClick={saveEditTask}
+                  disabled={!taskText.trim()}
+                  style={{ 
+                    '--background': currentCategory?.color || '#6366F1',
+                    color: getContrastColor(currentCategory?.color || '#6366F1')
+                  }}
+                >
+                  Guardar Cambios
+                </IonButton>
               </div>
             </div>
           </IonContent>
